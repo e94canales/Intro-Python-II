@@ -1,4 +1,5 @@
 from room import Room
+from player import Player
 
 # Declare all the rooms
 
@@ -24,13 +25,13 @@ earlier adventurers. The only exit is to the south."""),
 
 # Link rooms together
 
-room['outside'].n_to = room['foyer']
+room['outside'].w_to = room['foyer']
 room['foyer'].s_to = room['outside']
-room['foyer'].n_to = room['overlook']
-room['foyer'].e_to = room['narrow']
+room['foyer'].w_to = room['overlook']
+room['foyer'].d_to = room['narrow']
 room['overlook'].s_to = room['foyer']
-room['narrow'].w_to = room['foyer']
-room['narrow'].n_to = room['treasure']
+room['narrow'].a_to = room['foyer']
+room['narrow'].w_to = room['treasure']
 room['treasure'].s_to = room['narrow']
 
 #
@@ -49,3 +50,48 @@ room['treasure'].s_to = room['narrow']
 # Print an error message if the movement isn't allowed.
 #
 # If the user enters "q", quit the game.
+
+playername = input("Player Name: ")
+
+direction = {
+    "w": "North",
+    "d": "East",
+    "a": "West",
+    "s": "South"
+}
+
+if len(playername) > 1:
+
+    print(f"Glad you could join us, {playername}")
+
+    # instantiate current player
+    currentplayer = Player(playername, room["outside"])
+    print(currentplayer.location)
+
+    while True:
+        
+        userinput = input(">> ").lower()
+
+        # supported keys (movement)
+        if userinput in ["w", "a", "s", "d"]:
+            print(f"You move to the {direction[userinput]}")
+            movetolocation= getattr(currentplayer.location, f"{userinput}_to")
+            if movetolocation == None:
+                print("There is nothing to see here, try moving somewhere else")
+            else:
+                currentplayer.location = movetolocation
+                print(currentplayer.location)
+
+        # quitting with confirmation
+        if userinput == "q":
+            print("Are you sure you want to quit?")
+            quitterinput = input("Quit? y / n: ").lower()
+            if quitterinput == "y":
+                break
+
+        # unknown key handler
+        elif userinput not in ["w", "a", "s", "d"]:
+            print("Try using movement keys WASD, or Q to quit!")
+else:
+    print("You must choose a name for yourself")
+
